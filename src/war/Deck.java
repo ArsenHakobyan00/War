@@ -19,7 +19,7 @@ public class Deck {
 	}
 
 	public Deck(Queue<Card> list) {
-		unshuffledDeck = list;
+		setUnshuffledDeck(list);
 	}
 
 	public Queue<Card> getUnshuffledDeck() {
@@ -30,6 +30,14 @@ public class Deck {
 		return shuffledDeck;
 	}
 
+	public void setUnshuffledDeck(Queue<Card> unshuffled) {
+		this.unshuffledDeck = unshuffled;
+	}
+
+	public void setShuffledDeck(Queue<Card> shuffled) {
+		this.shuffledDeck = shuffled;
+	}
+
 	private void createDeck() {
 		for (int i = 0; i < SUITS.length; i++) {
 			for (int j = 0; j < RANKS.length; j++) {
@@ -38,37 +46,44 @@ public class Deck {
 		}
 	}
 
-	public void shuffle() {
-		Card[] cards = new Card[unshuffledDeck.size()];
-		for (int i = 0; i < cards.length; i++) {
-			Card temp = unshuffledDeck.poll();
-			cards[i] = temp;
+	public void shuffle() throws InvalidDeckSizeException {
+		if (unshuffledDeck.size() > 52) {
+			throw new InvalidDeckSizeException();
+		} else {
+			Card[] cards = new Card[unshuffledDeck.size()];
+			for (int i = 0; i < cards.length; i++) {
+				Card temp = unshuffledDeck.poll();
+				cards[i] = temp;
+			}
+
+			for (int i = 0; i < cards.length; i++) {
+				// Random for remaining positions.
+				Random rand = new Random();
+				int r = i + rand.nextInt(cards.length - i);
+
+				// swapping the elements
+				Card temp = cards[r];
+				cards[r] = cards[i];
+				cards[i] = temp;
+			}
+
+			shuffledDeck = new ArrayDeque<Card>();
+
+			for (int i = 0; i < cards.length; i++) {
+				shuffledDeck.add(cards[i]);
+			}
 		}
-
-		for (int i = 0; i < cards.length; i++) {
-			// Random for remaining positions.
-			Random rand = new Random();
-			int r = i + rand.nextInt(cards.length - i);
-
-			// swapping the elements
-			Card temp = cards[r];
-			cards[r] = cards[i];
-			cards[i] = temp;
-		}
-
-		shuffledDeck = new ArrayDeque<Card>();
-
-		for (int i = 0; i < cards.length; i++) {
-			shuffledDeck.add(cards[i]);
-		}
-
-	}
+	}// inspired from https://www.geeksforgeeks.org/shuffle-a-deck-of-cards-3/
 
 	public Card deal() {
 		return shuffledDeck.poll();
 	}
 
-	public int size() {
-		return shuffledDeck.size();
+	public int size() throws InvalidDeckSizeException {
+		if (shuffledDeck.size() > 52 || shuffledDeck.size() < 0) {
+			throw new InvalidDeckSizeException();
+		} else {
+			return shuffledDeck.size();
+		}
 	}
 }
