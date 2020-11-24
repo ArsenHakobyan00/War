@@ -1,4 +1,4 @@
-package war;
+package tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -11,6 +11,11 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.junit.jupiter.api.Test;
+
+import exceptions.DeckAlreadyShuffledException;
+import exceptions.InvalidDeckSizeException;
+import war.Card;
+import war.Deck;
 
 class TestDeck {
 
@@ -70,6 +75,15 @@ class TestDeck {
 			deck4.setUnshuffledDeck(testUnshuffled);
 			unshuffledSize = deck4.getUnshuffledDeck().size();
 			deck4.shuffle();
+
+		});
+
+		assertThrows(DeckAlreadyShuffledException.class, () -> {
+			// unshuffled deck with a size of 52
+			// test shuffle more than once
+			Deck deck5 = new Deck();
+			deck5.shuffle();
+			deck5.shuffle();
 		});
 
 	}
@@ -95,6 +109,9 @@ class TestDeck {
 			deck1.shuffle();
 			assertTrue(deck1.size() == 52, "shuffled deck with a size of 52");
 
+			deck1.getShuffledDeck().add(new Card(null, null, 0));
+			deck1.size(); // Throws InvalidDeckSizeException, because size is 53
+
 			Deck deck2 = new Deck();
 			Queue<Card> newShuffledDeck = new ArrayDeque<Card>();
 			deck2.setShuffledDeck(newShuffledDeck);
@@ -110,9 +127,7 @@ class TestDeck {
 			newShuffledDeck.add(new Card(null, null, 0));
 			deck4.setShuffledDeck(newShuffledDeck);
 			assertTrue(deck4.size() == 1, "shuffled deck with a size of 1");
-			
-			// TODO Invalid Cases
 		});
-	}// TODO Test size()
+	}
 
-}// TODO Finish Deck Test Cases
+}

@@ -1,4 +1,4 @@
-package war;
+package exceptions;
 
 public class InvalidDeckSizeException extends Exception {
 	public InvalidDeckSizeException() {

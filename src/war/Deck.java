@@ -5,6 +5,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
+import exceptions.DeckAlreadyShuffledException;
+import exceptions.InvalidDeckSizeException;
+
 public class Deck {
 	private Queue<Card> unshuffledDeck;
 	private Queue<Card> shuffledDeck;
@@ -46,9 +49,11 @@ public class Deck {
 		}
 	}
 
-	public void shuffle() throws InvalidDeckSizeException {
+	public void shuffle() throws InvalidDeckSizeException, DeckAlreadyShuffledException {
 		if (unshuffledDeck.size() > 52) {
 			throw new InvalidDeckSizeException();
+		} else if (unshuffledDeck.size() == 0) {
+			throw new DeckAlreadyShuffledException();
 		} else {
 			Card[] cards = new Card[unshuffledDeck.size()];
 			for (int i = 0; i < cards.length; i++) {
