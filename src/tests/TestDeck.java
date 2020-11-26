@@ -63,7 +63,7 @@ class TestDeck {
 			// unshuffled deck with a size of 53
 			Deck deck3 = new Deck();
 			Queue<Card> testUnshuffled = deck3.getUnshuffledDeck();
-			testUnshuffled.add(new Card(null, null, 0));
+			testUnshuffled.add(new Card(null, null));
 			deck3.setUnshuffledDeck(testUnshuffled);
 			unshuffledSize = deck3.getUnshuffledDeck().size();
 			deck3.shuffle();
@@ -92,9 +92,9 @@ class TestDeck {
 	void test_deal() {
 		Deck deck = new Deck();
 		Queue<Card> newShuffledDeck = new ArrayDeque<Card>();
-		newShuffledDeck.add(new Card("Diamonds", "Ace", 0));
-		newShuffledDeck.add(new Card("Clubs", "4", 0));
-		newShuffledDeck.add(new Card("Hearts", "3", 0));
+		newShuffledDeck.add(new Card("Diamonds", "Ace"));
+		newShuffledDeck.add(new Card("Clubs", "4"));
+		newShuffledDeck.add(new Card("Hearts", "3"));
 
 		deck.setShuffledDeck(newShuffledDeck);
 
@@ -109,7 +109,7 @@ class TestDeck {
 			deck1.shuffle();
 			assertTrue(deck1.size() == 52, "shuffled deck with a size of 52");
 
-			deck1.getShuffledDeck().add(new Card(null, null, 0));
+			deck1.getShuffledDeck().add(new Card(null, null));
 			deck1.size(); // Throws InvalidDeckSizeException, because size is 53
 
 			Deck deck2 = new Deck();
@@ -124,7 +124,7 @@ class TestDeck {
 
 			Deck deck4 = new Deck();
 			newShuffledDeck = new ArrayDeque<Card>();
-			newShuffledDeck.add(new Card(null, null, 0));
+			newShuffledDeck.add(new Card(null, null));
 			deck4.setShuffledDeck(newShuffledDeck);
 			assertTrue(deck4.size() == 1, "shuffled deck with a size of 1");
 		});
