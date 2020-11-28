@@ -44,7 +44,7 @@ public class Deck {
 	private void createDeck() {
 		for (int i = 0; i < SUITS.length; i++) {
 			for (int j = 0; j < RANKS.length; j++) {
-				unshuffledDeck.add(new Card(SUITS[i], RANKS[j]));
+				unshuffledDeck.add(new Card(SUITS[i], RANKS[j], j));
 			}
 		}
 	}
@@ -85,7 +85,7 @@ public class Deck {
 	}
 
 	public int size() throws InvalidDeckSizeException {
-		if (shuffledDeck != null) { 
+		if (shuffledDeck != null) {
 			if (shuffledDeck.size() > 52 || shuffledDeck.size() < 0) {
 				throw new InvalidDeckSizeException();
 			}

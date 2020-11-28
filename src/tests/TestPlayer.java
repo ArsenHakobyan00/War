@@ -20,11 +20,11 @@ class TestPlayer {
 	void test_cardsLeft() {
 		assertThrows(InvalidHandSizeException.class, () -> {
 
-			Player player1 = new Player();
+			Player player1 = new Player("Player 1");
 			Queue<Card> playerHand = new ArrayDeque<Card>();
-			playerHand.add(new Card("Clubs", "Ace"));
-			playerHand.add(new Card("Diamonds", "2"));
-			playerHand.add(new Card("Spades", "3"));
+			playerHand.add(new Card("Clubs", "Ace",0));
+			playerHand.add(new Card("Diamonds", "2",0));
+			playerHand.add(new Card("Spades", "3",0));
 			player1.setPlayerHand(playerHand);
 
 			assertEquals(playerHand.size(), player1.cardsLeft(), "Making sure cardsLeft() returns the right size");
@@ -37,7 +37,7 @@ class TestPlayer {
 
 			// playerHand with a size of 53
 			Queue<Card> playerHand2 = deck.getUnshuffledDeck();
-			playerHand2.add(new Card(null, null));
+			playerHand2.add(new Card(null, null,0));
 			player1.setPlayerHand(playerHand2);
 			player1.cardsLeft();
 		});
@@ -47,13 +47,13 @@ class TestPlayer {
 	void test_getFirstCard() {
 		assertThrows(EmptyHandException.class, () -> {
 
-			Player player1 = new Player();
+			Player player1 = new Player("Player 1");
 			Queue<Card> playerHand = new ArrayDeque<Card>();
-			playerHand.add(new Card("Clubs", "2"));
-			playerHand.add(new Card("Hearts", "Jack"));
-			playerHand.add(new Card("Diamonds", "5"));
-			playerHand.add(new Card("Clubs", "7"));
-			playerHand.add(new Card("Spades", "10"));
+			playerHand.add(new Card("Clubs", "2",0));
+			playerHand.add(new Card("Hearts", "Jack",0));
+			playerHand.add(new Card("Diamonds", "5",0));
+			playerHand.add(new Card("Clubs", "7",0));
+			playerHand.add(new Card("Spades", "10",0));
 
 			player1.setPlayerHand(playerHand);
 			player1.getFirstCard();
@@ -67,13 +67,13 @@ class TestPlayer {
 
 	@Test
 	void test_addCards() {
-		Player player1 = new Player();
+		Player player1 = new Player("Player 1");
 		Queue<Card> playerHand = new ArrayDeque<Card>();
-		playerHand.add(new Card("Clubs", "2"));
-		playerHand.add(new Card("Hearts", "Jack"));
-		playerHand.add(new Card("Diamonds", "5"));
-		playerHand.add(new Card("Clubs", "7"));
-		playerHand.add(new Card("Spades", "10"));
+		playerHand.add(new Card("Clubs", "2",0));
+		playerHand.add(new Card("Hearts", "Jack",0));
+		playerHand.add(new Card("Diamonds", "5",0));
+		playerHand.add(new Card("Clubs", "7",0));
+		playerHand.add(new Card("Spades", "10",0));
 
 		assertTrue(player1.addCards(playerHand), "Adding some cards to check if the method is working properly");
 
@@ -88,12 +88,12 @@ class TestPlayer {
 		
 
 		
-		Player player2 = new Player();
+		Player player2 = new Player("Player 2");
 		// 2 cards to add, 50 cards are in the player's hand
 		Deck deck = new Deck();
 		Queue<Card> cardsToAdd = new ArrayDeque<Card>();
-		cardsToAdd.add(new Card(null, null));
-		cardsToAdd.add(new Card(null, null));
+		cardsToAdd.add(new Card(null, null,0));
+		cardsToAdd.add(new Card(null, null,0));
 		
 		Queue<Card> playerHand3 = deck.getUnshuffledDeck();
 		playerHand3.poll();

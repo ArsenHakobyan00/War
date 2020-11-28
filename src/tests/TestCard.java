@@ -10,8 +10,8 @@ class TestCard {
 
 	@Test
 	void test_toString() {
-		Card card1 = new Card("Spades", "10");
-		Card card2 = new Card("Hearts", "2");
+		Card card1 = new Card("Spades", "10",0);
+		Card card2 = new Card("Hearts", "2",0);
 
 		// Must return the correct string
 		assertEquals("10 of Spades", card1.toString(), "Testing Valid Equivalence class");

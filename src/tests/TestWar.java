@@ -6,11 +6,6 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 
 import org.junit.jupiter.api.Test;
-
-import exceptions.DeckAlreadyShuffledException;
-import exceptions.EmptyHandException;
-import exceptions.InvalidDeckSizeException;
-import exceptions.InvalidHandSizeException;
 import war.Card;
 import war.Deck;
 import war.War;
@@ -31,7 +26,7 @@ class TestWar {
 			// Testing start for a deck of 26 cards
 			Queue<Card> cards = new ArrayDeque<Card>();
 			for (int i = 0; i < 26; i++) {
-				cards.add(new Card(null, null));
+				cards.add(new Card(null, null, 0));
 			}
 
 			Deck deck = new Deck(cards);
@@ -43,7 +38,7 @@ class TestWar {
 			cards = new ArrayDeque<Card>();
 			deck = new Deck(cards);
 			for (int i = 0; i < 51; i++) {
-				cards.add(new Card(null, null));
+				cards.add(new Card(null, null, 0));
 			}
 
 			war1.setDeck(deck);
@@ -52,7 +47,7 @@ class TestWar {
 			cards = new ArrayDeque<Card>();
 			deck = new Deck(cards);
 			for (int i = 0; i < 53; i++) {
-				cards.add(new Card(null, null));
+				cards.add(new Card(null, null, 0));
 			}
 
 			war1.setDeck(deck);
@@ -64,89 +59,85 @@ class TestWar {
 	}
 
 	@Test
-	void test_isWar() {
+	void test_play() {
 		War war = new War();
-		Card card1 = new Card("Spades", "Ace");
-		Card card2 = new Card("Diamonds", "Ace");
-		war.getPlayCards().add(card1);
-		war.getPlayCards().add(card2);
-
-		assertTrue(war.isWar(), "Checking if two played cards have the same rank");
-
-		War war1 = new War();
-		card1 = new Card("Spades", "2");
-		card2 = new Card("Spades", "3");
-
-		war1.getPlayCards().add(card1);
-		war1.getPlayCards().add(card2);
-
-		assertFalse(war1.isWar(), "Checking if isWar() returns false when the cards are not of the same rank");
-
-	}
-
-	@Test
-	void test_isGameOver() {
 		try {
-			War war = new War();
 			war.start();
-			while (war.getPlayer1().cardsLeft() > 0) {
-				war.getPlayer1().getFirstCard();
-			}
 
-			assertEquals(0, war.getPlayer1().cardsLeft(), 
-					"Making sure that player1 has no cards left");
-			assertTrue(war.isGameOver(), "Testing a game over valid case");
+			// Test 1 - Player 1 wins
 
-			War war1 = new War();
-			war1.start();
-			while (war1.getPlayer1().cardsLeft() > 1) {
-				war1.getPlayer1().getFirstCard(); // make it 1 card
-			}
-			war1.getPlayer2().getFirstCard(); // make it 51 cards
+			Card card1 = new Card("Spades", "3", 1);
+			Card card2 = new Card("Spades", "2", 0);
 
-			assertEquals(1, war1.getPlayer1().cardsLeft(), 
-					"Making sure that player1 has 1 card left");
-			assertFalse(war1.isGameOver(), "Testing a game over valid case");
+			// Make space for the new cards
+			war.getPlayer1().getFirstCard();
+			war.getPlayer2().getFirstCard();
 
+			// After removing the first card from each player,
+			// Player 1 has 25 cards and Player 2 has 25 (2 cards removed)
+			assertTrue(war.getPlayer1().cardsLeft() == 25 && war.getPlayer2().cardsLeft() == 25);
+
+			assertEquals(25, war.getPlayer1().cardsLeft(), "Checking cards left");
+			assertEquals(1, war.play(card1, card2), "Player 1 wins the round");
+			assertEquals(27, war.getPlayer1().cardsLeft(), "Making sure that the number has changed");
+
+			// Test 2 - Player 2 wins
+
+			// New Cards
+			card1 = new Card("Hearts", "King", 12);
+			card2 = new Card("Diamonds", "Ace", 13);
+
+			// Make space for the new cards
+			war.getPlayer1().getFirstCard();
+			war.getPlayer2().getFirstCard();
+
+			// After removing the first card from each player,
+			// Player 1 has 26 cards and Player 2 has 24 (2 cards removed)
+			assertTrue(war.getPlayer1().cardsLeft() == 26 && war.getPlayer2().cardsLeft() == 24);
+
+			assertEquals(24, war.getPlayer2().cardsLeft(), "Checking cards left");
+			assertEquals(2, war.play(card1, card2), "Player 2 wins the round");
+			assertEquals(26, war.getPlayer2().cardsLeft(), "Making sure that the number has changed");
+
+			// Test 3 - There's a tie (test war)
+
+			// New Cards
+			card1 = new Card("Clubs", "Jack", 10);
+			card2 = new Card("Diamonds", "Jack", 10);
+
+			// Make space for the new cards
+			war.getPlayer1().getFirstCard();
+			war.getPlayer2().getFirstCard();
+
+			// After removing the first card from each player,
+			// Both players have 25 cards (2 cards removed)
+			assertTrue(war.getPlayer1().cardsLeft() == 25 && war.getPlayer2().cardsLeft() == 25);
+
+			assertEquals(25, war.getPlayer2().cardsLeft(), "Checking cards left");
+			assertEquals(0, war.play(card1, card2), "It is a tie");
+			assertEquals(22, war.getPlayer2().cardsLeft(), "Making sure that the number has changed");
+			assertEquals(8, war.getKitty().size(), "Kitty size must be 8");
+
+			// Testing kitty adding after a tie
+
+			// Make space for the new cards
+			war.getPlayer1().getFirstCard();
+			war.getPlayer2().getFirstCard();
+
+			// After removing the first card from each player,
+			// Both players have 21 cards (2 cards removed and 8 are in the kitty)
+			assertTrue(war.getPlayer1().cardsLeft() == 21 && war.getPlayer2().cardsLeft() == 21);
+			
+			Card card3 = new Card("Hearts", "5", 3);
+			Card card4 = new Card("Hearts", "10", 8);
+			
+			assertEquals(21, war.getPlayer2().cardsLeft(), "Checking cards left");
+			assertEquals(2, war.play(card3, card4), "It is a tie");
+			assertEquals(31, war.getPlayer2().cardsLeft(), "Making sure that the number has changed");
+			assertEquals(0, war.getKitty().size(), "Kitty size must be 8");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	@Test
-	void test_isWin() {
-		War war = new War();
-		Card card1 = new Card("Spades", "Ace");
-		Card card2 = new Card("Diamonds", "King");
-		war.getPlayCards().add(card1);
-		war.getPlayCards().add(card2);
-
-		assertTrue(war.isWin(), 
-				"Checking if isWin() returns true when two played cards have different ranks");
-
-		War war1 = new War();
-		card1 = new Card("Spades", "3");
-		card2 = new Card("Spades", "2");
-
-		war1.getPlayCards().add(card1);
-		war1.getPlayCards().add(card2);
-
-		assertTrue(war1.isWin(), 
-				"Checking if isWin() returns true when two played cards have different ranks");
-
-		War war2 = new War();
-		card1 = new Card("Spades", "Ace");
-		card2 = new Card("Diamonds", "Ace");
-		war2.getPlayCards().add(card1);
-		war2.getPlayCards().add(card2);
-
-		assertFalse(war2.isWin(), 
-				"Checking if isWin() returns false when two played cards have same ranks");
-	}
-	
-	@Test
-	void test_playWar() {
-		
-	}// TODO test_playWar()
-
-}// TODO Code TestWar
+}

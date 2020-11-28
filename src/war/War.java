@@ -4,22 +4,29 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Queue;
 
+import exceptions.EmptyHandException;
 import exceptions.InvalidHandSizeException;
 
 public class War {
 
-	private Deck deck = new Deck();
-	private Deque<Card> kitty = new ArrayDeque<Card>();
-	private Queue<Card> playCards = new ArrayDeque<Card>();
+	private Deck deck;
+	private Deque<Card> kitty;
+	private Queue<Card> playCards;
 	private Player player1;
 	private Player player2;
 
 	public War() {
-		this.player1 = new Player();
-		this.player2 = new Player();
+		deck = new Deck();
+		kitty = new ArrayDeque<Card>();
+		playCards = new ArrayDeque<Card>();
+		this.player1 = new Player("Player 1");
+		this.player2 = new Player("Player 2");
 	}
 
 	public War(String player1Name, String player2Name) {
+		deck = new Deck();
+		kitty = new ArrayDeque<Card>();
+		playCards = new ArrayDeque<Card>();
 		this.player1 = new Player(player1Name);
 		this.player2 = new Player(player2Name);
 	}
@@ -63,71 +70,82 @@ public class War {
 	public void setPlayer2(Player player2) {
 		this.player2 = player2;
 	}
-
+	
+	// Deals the 26 cards to each player
 	public boolean start() throws Exception {
 		if (deck.size() == 52) {
 			deck.shuffle();
 			Queue<Card> player1Hand = new ArrayDeque<Card>();
 			Queue<Card> player2Hand = new ArrayDeque<Card>();
-			while (deck.size() > 0) {
+			while (deck.size() != 0) {
 				player1Hand.add(deck.deal());
 				player2Hand.add(deck.deal());
 			}
+			
 			player1.addCards(player1Hand);
 			player2.addCards(player2Hand);
-			return true;
-		}
-		return false;
-	}
-
-	public void play() {
-
-	}// TODO play()
-
-	public boolean isWar() {
-		
-		if (playCards.size() == 2) {
-			Card card1 = playCards.poll();
-			Card card2 = playCards.poll();
 			
-			if (card1.getRank().equals(card2.getRank())) {
-				kitty.push(card1);
-				kitty.push(card2);
-				return true;
-			}
-			playCards.add(card1);
-			playCards.add(card2);
-			return false;
-		}
-		return false;
-		
-	}
-
-	public boolean isGameOver() throws InvalidHandSizeException {
-		if (player1.cardsLeft() == 0 || player2.cardsLeft() == 0) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isWin() {
-		if (playCards.size() == 2) {
-			Card card1 = playCards.poll();
-			Card card2 = playCards.poll();
+			player1Hand.clear();
+			player2Hand.clear();
 			
-			if (card1.getRank().equals(card2.getRank())) {
-				kitty.push(card1);
-				kitty.push(card2);
-				return false;
-			}
-			playCards.add(card1);
-			playCards.add(card2);
 			return true;
 		}
 		return false;
 	}
 
-	public void playWar() {
+	// Description: plays one round of the WarGame.
+	// Possible result values:
+	// 1 - Player 1 won the round
+	// 2 - Player 2 won the round
+	// 0 - It is a Tie/War
+	// 11 - Player 1 has no cards left (Player 2 wins)
+	// 22 - Player 2 has no cards left (Player 1 wins)
+	public int play(Card card1, Card card2) throws EmptyHandException, InvalidHandSizeException {
+		int result = 0;
 
-	}// TODO playWar()
+		playCards.add(card1);
+		playCards.add(card2);
+
+		if (card1.getValue() > card2.getValue()) {
+			player1.addCards(playCards);
+			result = 1;
+			
+			// If there are any cards in the kitty, add them to the player as well
+			if (!kitty.isEmpty()) {
+				player1.addCards(kitty);
+				kitty.clear();
+			}
+		} else if (card1.getValue() < card2.getValue()) {
+			player2.addCards(playCards);
+			result = 2;
+			
+			// If there are any cards in the kitty, add them to the player as well
+			if (!kitty.isEmpty()) {
+				player2.addCards(kitty);
+				kitty.clear();
+			} 
+		} else {
+			// Add the 2 cards to the kitty
+			kitty.addAll(playCards);
+
+			// Check for a win
+			if (player1.cardsLeft() <= 2) {
+				player1.clearPlayerHand();
+				result = 11;
+			} else if (player2.cardsLeft() <= 2) {
+				player2.clearPlayerHand();
+				result = 22;
+			} else {// <-- It's a tie. The result is already 0 by default
+				
+				// Add 3 cards to the kitty
+				for (int i = 0; i < 3; i++) {
+					kitty.add(player1.getFirstCard());
+					kitty.add(player2.getFirstCard());
+				}
+			}
+		}
+		playCards.clear();
+		return result;
+	}
+
 }// Code War
